@@ -3,25 +3,35 @@ import { Link } from "react-router-dom";
 import Breadcrumbs from "./breadcrumbs";
 import Query from "./Query";
 import { store } from "./store";
+import compare from "trivial-compare";
 
 export function Admin() {
   return (
     <Query path={`/users`}>
-      {(users) => (
-        <div className="box-group">
-          {Object.keys(users)
-            .sort()
-            .map((userId) => (
-              <div key={userId} className="box">
-                <article>
-                  <Link to={`/admin/users/${userId}`}>
-                    <h2>{userId}</h2>
-                  </Link>
-                </article>
-              </div>
-            ))}
-        </div>
-      )}
+      {(usersMap) => {
+        const users = Object.keys(usersMap).map((userId) => ({
+          ...usersMap[userId],
+          id: userId,
+          displayName:
+            usersMap[userId].displayName || usersMap[userId].email || userId,
+        }));
+        users.sort((a, b) => compare(a.displayName, b.displayName));
+        return (
+          <div className="box-group">
+            {users.map((user) => {
+              return (
+                <div key={user.id} className="box">
+                  <article>
+                    <Link to={`/admin/users/${user.id}`}>
+                      <h2>{user.displayName}</h2>
+                    </Link>
+                  </article>
+                </div>
+              );
+            })}
+          </div>
+        );
+      }}
     </Query>
   );
 }
