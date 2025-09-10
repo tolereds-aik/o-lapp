@@ -46,10 +46,7 @@ findSettingsFolderId()
               const isGuardian = cols[1].trim();
               if (!isGuardian) {
                 const id = cols[4];
-                const groupName =
-                  cols[0] === "Violett" || cols[0] === "Svart"
-                    ? "Violett-Svart"
-                    : cols[0];
+                const groupName = cols[0];
 
                 let groupRef = groupNameMap[groupName];
                 if (!groupRef) {
