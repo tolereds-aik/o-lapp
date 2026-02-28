@@ -65,7 +65,7 @@ findSettingsFolderId()
                 const memberProps = colsToMember(cols);
                 if (blacklistedNames.includes(memberProps.name)) {
                   console.log(
-                    `Blacklisted member: ${memberProps.name} for ${groupName}`
+                    `Blacklisted member: ${memberProps.name} for ${groupName}`,
                   );
                   delete members[id];
                   membersRef.child(id).remove(awaitCb());
@@ -85,13 +85,19 @@ findSettingsFolderId()
                 stats.nMembers++;
               } else {
                 const pattern = /Till målsman för:\s*(.*)/;
-                const childName = pattern.exec(cols[1])[1].trim();
+                const childNameWithPossibleAlias = pattern
+                  .exec(cols[1])[1]
+                  .trim();
+                const childName = childNameWithPossibleAlias?.replace(
+                  / ".*"/g,
+                  "",
+                );
                 const childId = Object.keys(members).find(
-                  (id) => members[id].name === childName
+                  (id) => members[id].name === childName,
                 );
                 if (!childId) {
                   console.error(
-                    `Unable to find child with name ${childName} for guardian ${cols[2]} ${cols[3]}`
+                    `Unable to find child with name ${childName} (${childNameWithPossibleAlias}) for guardian ${cols[2]} ${cols[3]}`,
                   );
                 } else {
                   const child = members[childId];
@@ -126,7 +132,7 @@ findSettingsFolderId()
 
         if (--waitCount <= 0) {
           console.log(
-            `Successfully imported ${stats.nMembers} members in ${stats.nGroups} groups.`
+            `Successfully imported ${stats.nMembers} members in ${stats.nGroups} groups.`,
           );
           process.exit(0);
         }
@@ -137,8 +143,8 @@ findSettingsFolderId()
       const phone = cols[6].startsWith("46")
         ? "+" + cols[6]
         : cols[6].startsWith("0")
-        ? cols[6]
-        : "0" + cols[6];
+          ? cols[6]
+          : "0" + cols[6];
 
       return {
         name: [cols[2], cols[3]].join(" "),
